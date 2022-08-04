@@ -60,7 +60,7 @@ class CLNApi extends AppApi {
   }
 
   @override
-  Future<AppListFunds?> listFunds() {
+  Future<AppListFunds> listFunds() {
     dynamic params;
     switch (mode) {
       case ClientMode.grpc:
@@ -70,15 +70,12 @@ class CLNApi extends AppApi {
         params = CLNListFundsRequest(unixRequest: <String, dynamic>{});
         break;
     }
-    return client.call<CLNListFundsRequest, AppListFunds?>(
+    return client.call<CLNListFundsRequest, AppListFunds>(
         method: "listfunds",
         params: params,
-        onDecode: (jsonResponse) {
-          LogManager.getInstance.debug(
-              "Grpc list funds call ${AppListFunds.fromJSON(jsonResponse as Map<String, dynamic>, snackCase: mode == ClientMode.unixSocket)}");
-          return AppListFunds.fromJSON(jsonResponse,
-              snackCase: mode == ClientMode.unixSocket);
-        });
+        onDecode: (jsonResponse) => AppListFunds.fromJSON(
+            jsonResponse as Map<String, dynamic>,
+            snackCase: mode == ClientMode.unixSocket));
   }
 
   @override

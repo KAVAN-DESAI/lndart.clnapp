@@ -3,6 +3,7 @@ import 'package:clnapp/components/buttons.dart';
 import 'package:clnapp/model/app_model/get_info.dart';
 import 'package:clnapp/utils/app_provider.dart';
 import 'package:clnapp/views/pay/pay_view.dart';
+import 'package:clnapp/views/setting/setting_view.dart';
 import 'package:flutter/material.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:trash_component/components/expandable_card.dart';
@@ -20,6 +21,13 @@ class _HomeViewState extends State<HomeView> {
   int _currentIndex = 0;
 
   int amountSat = 0;
+
+  late final pages = [
+    const Text("Info"),
+    _buildMainView(context: context),
+    const Text("profile"),
+    SettingView(provider: widget.provider),
+  ];
 
   @override
   void initState() {
@@ -122,7 +130,7 @@ class _HomeViewState extends State<HomeView> {
     final invoicesList = await widget.provider.get<AppApi>().listInvoices();
     final fundsList = await widget.provider.get<AppApi>().listFunds();
 
-    var listPayments = List.from(invoicesList.invoice)..addAll(fundsList!.fund);
+    var listPayments = List.from(invoicesList.invoice)..addAll(fundsList.fund);
 
     /// FIXME: sort the payments list
     return listPayments;
@@ -131,7 +139,7 @@ class _HomeViewState extends State<HomeView> {
   Future<int> getamountMsat() async {
     final channelsList = await widget.provider.get<AppApi>().listFunds();
 
-    return channelsList!.channelSats.toInt();
+    return channelsList.channelSats.toInt();
   }
 
   Widget _buildSpecificPaymentView(
@@ -299,6 +307,13 @@ class _HomeViewState extends State<HomeView> {
           activeColor: Theme.of(context).toggleableActiveColor,
           inactiveColor: Theme.of(context).highlightColor,
         ),
+        BottomNavyBarItem(
+          icon: const Icon(Icons.settings_outlined),
+          title: const Text('Setting'),
+          textAlign: TextAlign.center,
+          activeColor: Theme.of(context).toggleableActiveColor,
+          inactiveColor: Theme.of(context).highlightColor,
+        ),
       ],
     );
   }
@@ -306,7 +321,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildMainView(context: context),
+      body: pages[_currentIndex],
       bottomNavigationBar: _buildBottomNavigation(),
     );
   }
